@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LarpOS | A 32-bit Hobby OS</title>
+    
+    <style>
+        /* palettes */
+        :root {
+            --bg: #fbf1c7;
+            --fg: #3c3836;
+            --surf: #ebdbb2;
+            --surf-s: #f2e5bc;
+            --red: #cc241d;
+            --yel: #d79921;
+            --grn: #b8bb26;
+            --blu: #83a598;
+            --drk: #282828;
+            --drk-fg: #ebdbb2;
+            --mut: #7c6f64;
+        }
+
+        /* reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* base */
+        body { 
+            background: var(--bg); 
+            color: var(--fg); 
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--drk); }
+        ::-webkit-scrollbar-thumb { background: var(--mut); border-radius: 4px; }
+
+        /* layout */
+        .wrap { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+        
+        /* nav */
+        nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .pill { background: var(--surf); padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .user { background: var(--surf-s); padding: 0.6rem 1.2rem; border-radius: 50px; color: var(--mut); font-weight: 600; display: flex; align-items: center; gap: 8px;}
+
+        /* anims */
+        .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* hero */
+        .hero { 
+            background: var(--surf); 
+            padding: 4rem; 
+            border-radius: 3rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 2rem;
+            position: relative;
+        }
+        .hero-txt { flex: 1; z-index: 2; }
+        .badge { display: inline-block; background: var(--surf-s); color: var(--yel); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; }
+        .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 1rem; color: var(--drk); }
+        .hero span { color: var(--red); }
+        .hero p { color: var(--mut); margin-bottom: 1.5rem; max-width: 400px; }
+        
+        /* btns */
+        .btn { 
+            background: var(--red); 
+            color: var(--bg); 
+            padding: 1rem 2rem; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.85; }
+
+        /* hero visual */
+        .hero-vis { background: var(--surf-s); width: 250px; height: 250px; border-radius: 40px; display: flex; align-items: center; justify-content: center; transform: rotate(3deg); z-index: 2;}
+
+        /* term */
+        .term { 
+            background: var(--drk); 
+            color: var(--drk-fg); 
+            padding: 2.5rem; 
+            border-radius: 2.5rem; 
+            font-family: monospace;
+            border: 4px solid var(--fg);
+        }
+        .t-head { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .d-r { background: #fb4934; } .d-y { background: #fabd2f; } .d-g { background: #b8bb26; }
+        
+        .t-body { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .ascii { color: var(--yel); font-weight: bold; line-height: 1.2; }
+        .t-info b { color: var(--blu); }
+        .t-user { color: var(--grn); font-weight: bold; }
+        .blocks { display: flex; gap: 4px; margin-top: 10px; }
+        .blk { width: 16px; height: 16px; }
+
+        /* grid */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .card { background: var(--surf-s); padding: 2.5rem; border-radius: 2.5rem; }
+        .card-d { background: var(--fg); color: var(--drk-fg); }
+        .card h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .card-d h3 { color: var(--yel); }
+        
+        /* lists & links */
+        ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .b-link { 
+            background: #504945; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-family: monospace; 
+            font-size: 0.9rem; 
+            border-left: 4px solid var(--grn); 
+            display: flex; 
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            transition: filter 0.2s;
+        }
+        .b-link:hover { filter: brightness(1.2); }
+        .branch-tag { color: var(--mut); }
+
+        /* foot */
+        footer { text-align: center; color: var(--mut); margin-top: 2rem; font-size: 0.9rem; }
+        
+        /* svg fixes */
+        svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; padding: 2rem; }
+            .t-body { flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="wrap">
+        
+        <nav class="fade-up">
+            <div class="pill">
+                <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                LarpOS
+            </div>
+            <div class="user">
+                <svg viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                garodaemon
+            </div>
+        </nav>
+
+        <section class="hero fade-up">
+            <div class="hero-txt">
+                <div class="badge">v0.5.3</div>
+                <h1>A humble <span>32-bit</span><br>hobby OS.</h1>
+                <p>Experimental operating system written from scratch. Exploring kernel fundamentals.</p>
+                <a href="https://github.com/garodaemon" target="_blank" class="btn">
+                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    GitHub
+                </a>
+            </div>
+            <div class="hero-vis">
+                <svg viewBox="0 0 24 24" style="width:80px;height:80px;stroke:#7c6f64;"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+            </div>
+        </section>
+
+        <section class="term fade-up">
+            <div class="t-head">
+                <div class="dot d-r"></div>
+                <div class="dot d-y"></div>
+                <div class="dot d-g"></div>
+            </div>
+            <div class="t-body">
+<pre class="ascii">
+    __      
+   / /      
+  / /       
+ / /        
+/ /____     
+\_____/     
+</pre>
+                <div class="t-info">
+                    <p class="t-user">garodaemon<span style="color:#ebdbb2">@</span>larpos</p>
+                    <p style="color:#928374">-------------------</p>
+                    <p><b>OS:</b> LarpOS 32-bit (i386)</p>
+                    <p><b>Kernel:</b> 0.5.3</p>
+                    <p><b>Uptime:</b> 14 mins</p>
+                    <p><b>Packages:</b> 12 (custom)</p>
+                    <p><b>Shell:</b> lsh (Larp Shell)</p>
+                    <p><b>Memory:</b> 18MiB / 512MiB</p>
+                    
+                    <div class="blocks">
+                        <div class="blk" style="background:#cc241d"></div>
+                        <div class="blk" style="background:#98971a"></div>
+                        <div class="blk" style="background:#d79921"></div>
+                        <div class="blk" style="background:#458588"></div>
+                        <div class="blk" style="background:#b16286"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid">
+            
+            <div class="card fade-up">
+                <h3>The Goal</h3>
+                <p style="color:var(--mut);">Purely educational. Explores bootloaders, memory management, and basic hardware interaction without modern complexity.</p>
+            </div>
+
+            <div class="card card-d fade-up">
+                <h3>OS Branches</h3>
+                <ul>
+                    <li><a href="https://github.com/garodaemon/LarpOS" target="_blank" class="b-link"><span>LarpOS</span><span class="branch-tag">Mainline</span></a></li>
+                    <li><a href="https://github.com/garodaemon/LarpOS-C" target="_blank" class="b-link" style="border-color:var(--yel);"><span>LarpOS C</span><span class="branch-tag">C Rewrite</span></a></li>
+                    <li><a href="https://github.com/garodaemon/LarpOS-C-Experimental-branch" target="_blank" class="b-link" style="border-color:var(--red);"><span>LarpOS C exp</span><span class="branch-tag">Unstable</span></a></li>
+                    <li><a href="https://github.com/garodaemon/HolyLarpOS-C" target="_blank" class="b-link" style="border-color:#d3869b;"><span>LarpOS HC</span><span class="branch-tag">Hardcore</span></a></li>
+                </ul>
+            </div>
+
+        </section>
+
+        <footer>
+            <p>© 2026 garodaemon. Built for fun.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const obs = new IntersectionObserver((ents) => {
+                ents.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+        });
+    </script>
+
+    <script type="text/qml" id="larpos-native-ui">
+        import QtQuick 2.15
+        import QtQuick.Controls 2.15
+
+        ApplicationWindow {
+            visible: true
+            width: 800
+            height: 600
+            title: "LarpOS - garodaemon"
+            color: "#282828" 
+
+            Rectangle {
+                id: topBar
+                width: parent.width
+                height: 30
+                color: "#3c3836"
+                
+                Text {
+                    anchors.centerIn: parent
+                    text: "LarpOS v0.5.3"
+                    color: "#ebdbb2"
+                    font.pixelSize: 14
+                    font.family: "monospace"
+                }
+            }
+
+            Rectangle {
+                width: 600
+                height: 400
+                anchors.centerIn: parent
+                color: "#1d2021"
+                border.color: "#7c6f64"
+                border.width: 2
+                radius: 10
+
+                Text {
+                    anchors.margins: 10
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    text: "garodaemon@larpos:~$ _"
+                    color: "#b8bb26" 
+                    font.family: "monospace"
+                }
+            }
+        }
+    </script>
+</body>
+</html>
