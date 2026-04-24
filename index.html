@@ -130,6 +130,20 @@
         .b-link:hover { filter: brightness(1.2); }
         .branch-tag { color: var(--mut); }
 
+        /* Crew styles */
+        .crew-member {
+            background: #504945;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .crew-member.g-tag { border-left: 4px solid var(--grn); color: var(--drk-fg); }
+        .crew-member.a-tag { border-left: 4px solid var(--blu); color: var(--drk-fg); }
+
         /* foot */
         footer { text-align: center; color: var(--mut); margin-top: 2rem; font-size: 0.9rem; }
         
@@ -160,7 +174,7 @@
 
         <section class="hero fade-up">
             <div class="hero-txt">
-                <div class="badge">v0.5.3</div>
+                <div class="badge">0.5 Release</div>
                 <h1>A humble <span>32-bit</span><br>hobby OS.</h1>
                 <p>Experimental operating system written from scratch. Exploring kernel fundamentals.</p>
                 <a href="https://github.com/garodaemon" target="_blank" class="btn">
@@ -192,7 +206,7 @@
                     <p class="t-user">garodaemon<span style="color:#ebdbb2">@</span>larpos</p>
                     <p style="color:#928374">-------------------</p>
                     <p><b>OS:</b> LarpOS 32-bit (i386)</p>
-                    <p><b>Kernel:</b> 0.5.3</p>
+                    <p><b>Kernel:</b> 0.5 Release</p>
                     <p><b>Uptime:</b> 14 mins</p>
                     <p><b>Packages:</b> 12 (custom)</p>
                     <p><b>Shell:</b> lsh (Larp Shell)</p>
@@ -226,10 +240,24 @@
                 </ul>
             </div>
 
+            <div class="card card-d fade-up" style="grid-column: 1 / -1;">
+                <h3>Crew</h3>
+                <ul style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <li class="crew-member g-tag">
+                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--grn);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        garodaemon
+                    </li>
+                    <li class="crew-member a-tag">
+                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--blu);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        justlinuxyourself
+                    </li>
+                </ul>
+            </div>
+
         </section>
 
         <footer>
-            <p>© 2026 garodaemon. Built for fun.</p>
+            <p>© 2026 garodaemon & justlinuxyourself. LarpOS C.</p>
         </footer>
 
     </div>
@@ -267,7 +295,7 @@
                 
                 Text {
                     anchors.centerIn: parent
-                    text: "LarpOS v0.5.3"
+                    text: "LarpOS 0.5 Release"
                     color: "#ebdbb2"
                     font.pixelSize: 14
                     font.family: "monospace"
